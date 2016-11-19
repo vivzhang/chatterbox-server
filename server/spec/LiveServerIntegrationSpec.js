@@ -73,5 +73,35 @@ describe('server', function() {
     });
   });
 
+  it('Should handle when order is requested in the dataType of request', function(done) {
+    request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+      expect(response.statusCode).to.equal(200);
+      done();
+    });
+  });
+
+  it('should not POST empty messages or messages from empty usernames', function(done) {
+
+    var requestParams1 = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: '',
+        message: ''}
+    };
+
+    request(requestParams1, function(error, response, body) {
+      // Now if we request the log, that message we posted should be there:
+      request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+        var messages = JSON.parse(body).results;
+        expect(messages[0].username).to.equal('Jono');
+        expect(messages[0].message).to.equal('Do my bidding!');
+        done();
+      });
+    });
+
+
+  
+  });
+
 
 });

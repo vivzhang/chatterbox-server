@@ -21,8 +21,8 @@ var defaultCorsHeaders = {
   'access-control-allow-headers': 'content-type, accept',
   'access-control-max-age': 10 // Seconds.
 };
-var objectId = 1;
-var db = {results: [{username: '', roomname: '', text: '', objectId: 1}]};
+var objectId = 0;
+var db = {results: []};
 
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -61,9 +61,11 @@ var requestHandler = function(request, response) {
       });
       request.on('end', function() {
         var parsedNewMessage = JSON.parse(message);
-        objectId++;
-        parsedNewMessage['objectId'] = objectId;
-        db.results.push(parsedNewMessage);
+        if (parsedNewMessage.username !== undefined || parsedNewMessage.message !== undefined) {
+          objectId++;
+          parsedNewMessage['objectId'] = objectId;
+          db.results.push(parsedNewMessage);
+        }
       });
     }
 
