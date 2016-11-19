@@ -73,6 +73,7 @@ var app = {
 
         // Only bother updating the DOM if we have a new message
         if (mostRecentMessage.objectId !== app.lastMessageId) {
+          console.log('updating the DOM');
           // Update the UI with the fetched rooms
           app.renderRoomList(data.results);
 

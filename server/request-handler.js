@@ -21,7 +21,7 @@ var defaultCorsHeaders = {
   'access-control-allow-headers': 'content-type, accept',
   'access-control-max-age': 10 // Seconds.
 };
-
+var objectId = 1;
 var db = {results: [{username: '', roomname: '', text: '', objectId: 1}]};
 
 var requestHandler = function(request, response) {
@@ -43,7 +43,6 @@ var requestHandler = function(request, response) {
   // The outgoing status.
   var statusCode;
   var headers = defaultCorsHeaders;
-
   var parsed = url.parse(request.url).pathname;
   var createdAt = queryString.parse(url.parse(request.url).query);
 
@@ -54,15 +53,17 @@ var requestHandler = function(request, response) {
     response.end('404 Page NOT FOUND');
   } else {
     statusCode = 200;
-    if (request.method === 'POST') {
+    if (request.method === 'POST') { 
       statusCode = 201;
       var message = '';
       request.on('data', function(data) {
         message += data;
       });
       request.on('end', function() {
-        console.log(message);
-        db.results.push(JSON.parse(message));
+        var parsedNewMessage = JSON.parse(message);
+        objectId++;
+        parsedNewMessage['objectId'] = objectId;
+        db.results.push(parsedNewMessage);
       });
     }
 
@@ -85,7 +86,6 @@ var requestHandler = function(request, response) {
     //
     // Calling .end "flushes" the response's internal buffer, forcing
     // node to actually send all the data over to the client.
-    console.log(db);
     response.end(JSON.stringify(db));
   }
 };
